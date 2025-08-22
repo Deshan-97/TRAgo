@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelGo - Vehicle Hire Platform</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1>TravelGo</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+
+            <!-- Hire Details Section -->
+            <section id="hireDetailsSection">
+                <div id="hireDetailsContainer">
+                    <!-- Hire details will be loaded here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Terms and Conditions Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>නියමයන් සහ කොන්දේසි</h3>
+                <button class="close" onclick="closeTermsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="terms-content">
+                    <p>🔺 කොමිස් මුදල් දින 2ක් ඇතුලත ගෙවීමට හැකි රියදුරු මහතුන් පමනක් ගමන් වාරය ලබා ගන්න .</p>
+                    
+                    <p>🔺 ගමන් වාරය අවසන් කර, නැවත එම CUSTOMER ව, ආයතනය හරහා යොමු කිරීමට හැකි රියදුරු මහතුන් ගමන් වාරය ලබා ගන්න.</p>
+                    
+                    <p>🔴🔴 (ගමන් වාරය අවසන් කර, ඊලග වතාවේ ගමන් වාරය තමන් සතු කර ගැනීමේ අරමුණින් තමන්ගේ VISITING CARD, PHONE NUMBERS දෙන රියදුරන් හා වෙනයම් විනය විරෝධී ක්‍රියා කරන රියදුරන් අපි CUSTOMER FEEDBACK තුලින් හදුනාගෙන ඔහුන්ට නැවත ගමන් වාර ලබා නොදීමට කටයුතු කරනු ලැබේ..)</p>
+                </div>
+                <div class="terms-actions">
+                    <button id="agreeButton" class="btn btn-primary" onclick="agreeToTerms()">එකගයි</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bid Modal -->
+    <div id="bidModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>ඔබේ මිල​ ඉදිරිපත් කරන්න</h3>
+                <button class="close" onclick="closeBidModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="bidForm" enctype="multipart/form-data">
+                    <input type="hidden" id="hireRequestId" name="hire_request_id">
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="ownerName">ඔබේ නම *</label>
+                        <input type="text" id="ownerName" name="owner_name" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="vehicleType">වාහන වර්ගය *</label>
+                        <select id="vehicleType" name="vehicle_type" class="form-select" required>
+                            <option value="">වාහන වර්ගය තෝරන්න</option>
+                            <option value="car">Car</option>
+                            <option value="van">Van</option>
+                            <option value="bus">Bus</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="pricePerKmAc">කිලෝමීටරයකට මිල (AC සමඟ) - රු. *</label>
+                        <input type="number" id="pricePerKmAc" name="price_per_km_ac" class="form-input" 
+                               step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="pricePerKmNonAc">කිලෝමීටරයකට මිල (AC නොමැතිව) - රු. *</label>
+                        <input type="number" id="pricePerKmNonAc" name="price_per_km_non_ac" class="form-input" 
+                               step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="fullHirePrice">සම්පූර්ණ මිල - රු. *</label>
+                        <input type="number" id="fullHirePrice" name="full_hire_price" class="form-input" 
+                               step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="photo1">වාහන ඉදිරිපස ඡායාරූපය</label>
+                        <input type="file" id="photo1" name="photo1" class="form-file" 
+                               accept="image/jpeg,image/jpg,image/png,image/gif">
+                        <div class="upload-instructions">
+                            <span class="highlight">Click to select</span> 
+                        </div>
+                        <div id="photo1Preview" class="file-preview">
+                            <img id="photo1Image" src="" alt="Photo 1 Preview">
+                            <button type="button" id="photo1Remove" class="remove-file" onclick="removeFile('photo1')">&times;</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="photo2">වාහන ඇතුළත ඡායාරූපය</label>
+                        <input type="file" id="photo2" name="photo2" class="form-file" 
+                               accept="image/jpeg,image/jpg,image/png,image/gif">
+                        <div class="upload-instructions">
+                            <span class="highlight">Click to select</span>(උපරිම 20MB)
+                        </div>
+                        <div id="photo2Preview" class="file-preview">
+                            <img id="photo2Image" src="" alt="Photo 2 Preview">
+                            <button type="button" id="photo2Remove" class="remove-file" onclick="removeFile('photo2')">&times;</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="phoneNumber">දුරකථන අංකය *</label>
+                        <input type="tel" id="phoneNumber" name="phone_number" class="form-input" 
+                               pattern="[0-9]{10}" maxlength="10" placeholder="0771234567" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <span id="submitText">යවන්න</span>
+                        <span id="submitLoading" class="loading" style="display: none;"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

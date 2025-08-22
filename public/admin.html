@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelGo Admin Panel</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="container">
+            <h1>TravelGo Admin Panel</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+
+            <!-- Navigation -->
+            <div style="margin-bottom: 2rem;">
+                <button onclick="showSection('addHire')" class="btn btn-primary" style="margin-right: 1rem;">Add New Hire</button>
+                <button onclick="showSection('viewHires')" class="btn btn-secondary" style="margin-right: 1rem;">View Active Hires</button>
+                <button onclick="showSection('viewBids')" class="btn btn-success">View All Bids</button>
+                <a href="/" class="btn btn-secondary" style="margin-left: 1rem;">View Landing Page</a>
+            </div>
+
+            <!-- Add New Hire Section -->
+            <section id="addHireSection" class="admin-section">
+                <h2>Add New Hire Request</h2>
+                <form id="hireForm">
+                    <div class="form-group">
+                        <label class="form-label" for="pickupLocation">Pickup Location *</label>
+                        <input type="text" id="pickupLocation" name="pickup_location" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="dropoffLocation">Dropoff Location *</label>
+                        <input type="text" id="dropoffLocation" name="dropoff_location" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="pickupDate">Pickup Date *</label>
+                        <input type="date" id="pickupDate" name="pickup_date" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="hireType">Hire Type *</label>
+                        <select id="hireType" name="hire_type" class="form-select" required>
+                            <option value="">Select Hire Type</option>
+                            <option value="wedding">Wedding</option>
+                            <option value="trip">Trip</option>
+                            <option value="airport_transport">Airport Transport</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="vehicleTypeAdmin">Vehicle Type *</label>
+                        <select id="vehicleTypeAdmin" name="vehicle_type" class="form-select" required>
+                            <option value="">Select Vehicle Type</option>
+                            <option value="car">Car</option>
+                            <option value="van">Van</option>
+                            <option value="bus">Bus</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="passengers">Number of Passengers *</label>
+                        <select id="passengers" name="passengers" class="form-select" required>
+                            <option value="">Select Passengers</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">AC Preference *</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="acYes" name="ac_preference" value="AC" required>
+                                <label for="acYes">AC</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="acNo" name="ac_preference" value="Non-AC" required>
+                                <label for="acNo">Non-AC</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="durationDays">Duration (Days) *</label>
+                        <select id="durationDays" name="duration_days" class="form-select" required>
+                            <option value="">Select Duration</option>
+                            <option value="1">1 Day</option>
+                            <option value="2">2 Days</option>
+                            <option value="3">3 Days</option>
+                            <option value="4">4 Days</option>
+                            <option value="5">5 Days</option>
+                            <option value="6">6 Days</option>
+                            <option value="7">7 Days</option>
+                            <option value="8">8 Days</option>
+                            <option value="9">9 Days</option>
+                            <option value="10">10 Days</option>
+                            <option value="14">14 Days</option>
+                            <option value="21">21 Days</option>
+                            <option value="30">30 Days</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="additionalData">Additional Requirements</label>
+                        <textarea id="additionalData" name="additional_data" class="form-textarea" 
+                                  placeholder="Any special requirements or additional information..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">
+                        <span id="hireSubmitText">Create Hire Request</span>
+                        <span id="hireSubmitLoading" class="loading" style="display: none;"></span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- View Active Hires Section -->
+            <section id="viewHiresSection" class="admin-section" style="display: none;">
+                <h2>Active Hire Requests</h2>
+                <div id="activeHiresContainer">
+                    <!-- Active hires will be loaded here -->
+                </div>
+            </section>
+
+            <!-- View All Bids Section -->
+            <section id="viewBidsSection" class="admin-section" style="display: none;">
+                <h2>All Submitted Bids</h2>
+                <div id="allBidsContainer">
+                    <!-- All bids will be loaded here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

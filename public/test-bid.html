@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Bid Submission</title>
+</head>
+<body>
+    <h1>Test Bid Submission</h1>
+    
+    <form id="testBidForm">
+        <input type="hidden" name="hire_request_id" value="2">
+        <input type="text" name="owner_name" placeholder="Owner Name" value="Test Owner" required><br><br>
+        <select name="vehicle_type" required>
+            <option value="van">Van</option>
+        </select><br><br>
+        <input type="number" name="price_per_km_ac" placeholder="AC Price" value="100" required><br><br>
+        <input type="number" name="price_per_km_non_ac" placeholder="Non-AC Price" value="80" required><br><br>
+        <input type="number" name="full_hire_price" placeholder="Full Price" value="5000" required><br><br>
+        <input type="tel" name="phone_number" placeholder="Phone" value="0771234567" required><br><br>
+        <button type="submit">Submit Test Bid</button>
+    </form>
+
+    <script>
+        document.getElementById('testBidForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('Form submitted!');
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('/api/bid', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                console.log('Response:', result);
+                
+                if (response.ok) {
+                    alert('Success: ' + result.message);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
