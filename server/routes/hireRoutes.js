@@ -6,7 +6,7 @@ const pool = require('../database/config');
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query(
-            'SELECT * FROM hire_requests WHERE is_active = TRUE ORDER BY created_at DESC'
+            'SELECT * FROM hire_requests ORDER BY created_at DESC'
         );
         res.json(result.rows);
     } catch (error) {
@@ -20,7 +20,7 @@ router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const result = await pool.query(
-            'SELECT * FROM hire_requests WHERE id = $1 AND is_active = TRUE',
+            'SELECT * FROM hire_requests WHERE id = $1',
             [id]
         );
         
