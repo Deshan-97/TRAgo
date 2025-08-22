@@ -1,191 +1,170 @@
-# TravelGo - Vehicle Hire Bidding Platform
+# TRAgo - Travel & Go Platform 🚗
 
-A mobile-first web platform where admins can post hire requests and vehicle owners can submit bids without requiring authentication.
+A complete vehicle hire bidding platform designed for Sri Lanka, featuring full Sinhala localization and mobile-first responsive design.
 
-## Features
+## 🌟 Features
 
-### Landing Page (Public)
-- **TravelGo Header** - Clean branding
-- **Hire Details Display** - Shows current hire requirements from admin
-- **Bid Submission** - Vehicle owners can submit offers with:
-  - Name, vehicle type
-  - Pricing (AC/Non-AC per km, full hire price)
-  - Two photo uploads
-  - Phone number
-- **No Authentication Required** - Anyone can submit bids
+### 🏠 Landing Page
+- **Hire Details Display**: Show current hire requests with pickup/dropoff locations, dates, and requirements
+- **Sinhala Interface**: Complete localization in Sinhala language
+- **Responsive Design**: Mobile-first approach for all devices
+- **Real-time Updates**: Auto-refresh hire details every 30 seconds
 
-### Admin Panel
-- **Add New Hire Requests** with:
-  - Pickup/Dropoff locations
-  - Hire type (wedding, trip, airport transport)
-  - Vehicle type (van, bus, car)
-  - Passengers (1-50)
-  - AC preference
-  - Duration (days)
-  - Additional requirements
-- **View Active Hires** - Manage current requests
-- **View All Bids** - Review submitted offers with photos
-- **No Authentication Required** - Direct access via URL
+### 📝 Bidding System
+- **Terms & Conditions**: Mandatory agreement modal in Sinhala before bidding
+- **Comprehensive Bid Form**: 
+  - Driver name and contact details
+  - Vehicle type selection (Car/Van/Bus)
+  - Pricing for AC and Non-AC services
+  - Full hire price option
+  - Vehicle photo uploads (up to 20MB per image)
+  - 10-digit phone number validation
+- **File Upload**: Image preview with remove functionality
+- **Real-time Validation**: Instant feedback for form inputs
 
-### Technical Features
-- **Mobile-First Design** - Responsive across all devices
-- **PostgreSQL Database** - Reliable data storage
-- **File Upload Support** - Vehicle photos with validation
-- **Real-time Updates** - Auto-refresh functionality
-- **Clean UI/UX** - Modern, intuitive interface
+### 🎛️ Admin Panel
+- **Hire Management**: Create and manage hire requests
+- **Bid Review**: View and manage submitted bids
+- **Database Integration**: PostgreSQL for data persistence
 
-## Technology Stack
+### 🔧 Technical Features
+- **Backend**: Node.js with Express.js
+- **Database**: PostgreSQL with proper schema
+- **File Uploads**: Multer middleware for handling images
+- **Security**: Input validation and sanitization
+- **Error Handling**: Comprehensive error management
 
-- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
-- **Backend**: Node.js with Express
-- **Database**: PostgreSQL
-- **File Handling**: Multer for image uploads
-- **Design**: Mobile-first responsive CSS
-
-## Setup Instructions
+## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js (v14 or higher)
 - PostgreSQL (v12 or higher)
 - npm or yarn
 
-### 1. Database Setup
+### Installation
 
-1. Install PostgreSQL and create a database:
-```sql
-CREATE DATABASE travelgo;
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Deshan-97/TRAgo.git
+   cd TRAgo
+   ```
 
-2. Create a user (optional):
-```sql
-CREATE USER travelgo_user WITH PASSWORD 'your_password';
-GRANT ALL PRIVILEGES ON DATABASE travelgo TO travelgo_user;
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-3. Run the schema file:
-```bash
-psql -d travelgo -f database/schema.sql
-```
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your database credentials
+   ```
 
-### 2. Application Setup
+4. **Set up the database**
+   ```bash
+   chmod +x setup-database-simple.sh
+   ./setup-database-simple.sh
+   ```
 
-1. Install dependencies:
-```bash
-npm install
-```
+5. **Start the application**
+   ```bash
+   npm start
+   ```
 
-2. Configure database connection:
-Edit `server/database/config.js` with your PostgreSQL credentials:
-```javascript
-const pool = new Pool({
-    user: 'your_username',
-    host: 'localhost',
-    database: 'travelgo',
-    password: 'your_password',
-    port: 5432,
-});
-```
+6. **Access the application**
+   - Main Platform: http://localhost:3000
+   - Admin Panel: http://localhost:3000/admin
 
-3. Start the application:
-```bash
-# Development mode (with auto-restart)
-npm run dev
-
-# Production mode
-npm start
-```
-
-4. Access the application:
-- **Landing Page**: http://localhost:3000
-- **Admin Panel**: http://localhost:3000/admin
-
-## Project Structure
+## 📁 Project Structure
 
 ```
-/
+TRAgo/
 ├── public/                 # Frontend files
+│   ├── css/               # Stylesheets
+│   ├── js/                # JavaScript files
+│   ├── uploads/           # File upload directory
 │   ├── index.html         # Landing page
-│   ├── admin.html         # Admin panel
-│   ├── css/
-│   │   └── styles.css     # Mobile-first styles
-│   ├── js/
-│   │   ├── main.js        # Landing page logic
-│   │   └── admin.js       # Admin panel logic
-│   └── uploads/           # Photo storage
+│   └── admin.html         # Admin panel
 ├── server/                # Backend files
-│   ├── app.js            # Main server file
-│   ├── routes/
-│   │   ├── hireRoutes.js # Hire request API
-│   │   └── bidRoutes.js  # Bid submission API
-│   └── database/
-│       └── config.js     # Database configuration
-├── database/
-│   └── schema.sql        # Database schema
-└── package.json          # Dependencies
+│   ├── routes/            # API routes
+│   ├── database/          # Database configuration
+│   └── app.js             # Main server file
+├── database/              # Database schema and migrations
+├── package.json           # Dependencies
+└── README.md             # Documentation
 ```
 
-## API Endpoints
+## 🌐 API Endpoints
 
 ### Hire Requests
-- `GET /api/hire` - Get all active hire requests
-- `GET /api/hire/:id` - Get specific hire request
-- `POST /api/hire` - Create new hire request (Admin)
-- `DELETE /api/hire/:id` - Deactivate hire request (Admin)
-- `GET /api/hire/:id/bids` - Get bids for specific hire
+- `GET /api/hire` - Get all hire requests
+- `POST /api/hire` - Create new hire request
+- `DELETE /api/hire/:id` - Delete hire request
 
 ### Bid Submissions
-- `GET /api/bid` - Get all bids (Admin)
-- `GET /api/bid/:id` - Get specific bid
-- `POST /api/bid` - Submit new bid (Public)
-- `DELETE /api/bid/:id` - Delete bid (Admin)
+- `POST /api/bid` - Submit a bid (with file upload)
 
-## Database Schema
+## 🎨 Sinhala Localization
 
-### hire_requests
-- id, pickup_location, dropoff_location
-- hire_type, vehicle_type, passengers
-- ac_preference, duration_days
-- additional_data, created_at, is_active
+The platform features complete Sinhala translation including:
+- Interface labels and buttons
+- Form field descriptions
+- Error messages
+- Terms and conditions
+- Success notifications
 
-### bid_submissions
-- id, hire_request_id, owner_name
-- vehicle_type, price_per_km_ac, price_per_km_non_ac
-- full_hire_price, photo1_path, photo2_path
-- phone_number, submitted_at
+## 📱 Mobile Responsive
 
-## Usage
+- Mobile-first CSS design
+- Touch-friendly interface
+- Optimized for screens from 320px to 1920px
+- Fast loading and smooth interactions
 
-### For Admins
-1. Navigate to `/admin`
-2. Fill in hire request details
-3. Submit to make it live on landing page
-4. View and manage submitted bids
-5. Contact vehicle owners directly
+## 🔒 Security Features
 
-### For Vehicle Owners
-1. Visit the main page
-2. View current hire requirements
-3. Click "Bid for This Hire"
-4. Fill in pricing and upload photos
-5. Submit bid for admin review
+- File upload validation (type and size)
+- Phone number format validation
+- SQL injection prevention
+- Input sanitization
+- CORS configuration
 
-## File Upload
-- **Supported formats**: JPEG, PNG, GIF
-- **Maximum size**: 5MB per image
-- **Storage**: Local filesystem (`/public/uploads/`)
+## 🛠️ Development
 
-## Security Notes
-- No authentication required as per requirements
-- File upload validation implemented
-- SQL injection protection via parameterized queries
-- XSS protection via proper data handling
+### Scripts
+```bash
+npm start           # Start the server
+npm run dev         # Development mode with nodemon
+./test-admin.sh     # Test admin functionality
+./test-bid.sh       # Test bid submission
+```
 
-## Contributing
+### Database Management
+```bash
+./setup-database.sh         # Full database setup
+./setup-database-simple.sh  # Quick setup
+```
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+## 👨‍💻 Author
+
+**Deshan**
+- GitHub: [@Deshan-97](https://github.com/Deshan-97)
+
+## 🤝 Contributing
+
 1. Fork the repository
-2. Create feature branch
-3. Make changes
-4. Test thoroughly
-5. Submit pull request
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
-MIT License - see LICENSE file for details
+## 📞 Support
+
+For support and questions, please open an issue on GitHub.
+
+---
+
+Made with ❤️ for the Sri Lankan transport industry
