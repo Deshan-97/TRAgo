@@ -243,9 +243,24 @@ function createHireCard(hire) {
 async function loadAllBids() {
     try {
         const response = await fetch('/api/bid');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const bids = await response.json();
         
         const container = document.getElementById('allBidsContainer');
+        
+        // Check if bids is an array and handle accordingly
+        if (!Array.isArray(bids)) {
+            console.error('Bids is not an array:', bids);
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>Error Loading Bids</h3>
+                    <p>Unable to load bids data properly.</p>
+                </div>
+            `;
+            return;
+        }
         
         if (bids.length === 0) {
             container.innerHTML = `
@@ -261,73 +276,57 @@ async function loadAllBids() {
         
     } catch (error) {
         console.error('Error loading bids:', error);
-        showAlert('Error loading bids', 'error');
+        const container = document.getElementById('allBidsContainer');
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3>Error Loading Bids</h3>
+                <p>Failed to load bids: ${error.message}</p>
+            </div>
+        `;
     }
 }
 
 // Create bid card HTML
 function createBidCard(bid) {
-    const submittedDate = new Date(bid.submitted_at).toLocaleDateString();
-    const submittedTime = new Date(bid.submitted_at).toLocaleTimeString();
+    const submittedDate = new Date(bid.created_at).toLocaleDateString();
+    const submittedTime = new Date(bid.created_at).toLocaleTimeString();
     const hireTypeDisplay = formatHireType(bid.hire_type);
     
     return `
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">${bid.owner_name} - ${bid.vehicle_type}</h3>
+                <h3 class="card-title">${bid.company_name} - ${bid.contact_person}</h3>
                 <p class="card-subtitle">
                     For: ${bid.pickup_location} → ${bid.dropoff_location} (${hireTypeDisplay})<br>
+                    Client: ${bid.user_name}<br>
                     Submitted: ${submittedDate} at ${submittedTime}
                 </p>
             </div>
             
             <div class="detail-item">
-                <span class="detail-label">Vehicle Type:</span>
-                <span class="detail-value">${formatVehicleType(bid.vehicle_type)}</span>
+                <span class="detail-label">Contact Phone:</span>
+                <span class="detail-value">${bid.contact_phone}</span>
             </div>
             
             <div class="detail-item">
-                <span class="detail-label">Price per KM (AC):</span>
-                <span class="detail-value highlight">LKR ${parseFloat(bid.price_per_km_ac).toFixed(2)}</span>
+                <span class="detail-label">Contact Email:</span>
+                <span class="detail-value">${bid.contact_email}</span>
             </div>
             
             <div class="detail-item">
-                <span class="detail-label">Price per KM (Non-AC):</span>
-                <span class="detail-value highlight">LKR ${parseFloat(bid.price_per_km_non_ac).toFixed(2)}</span>
+                <span class="detail-label">Bid Amount:</span>
+                <span class="detail-value highlight">LKR ${parseFloat(bid.bid_amount).toFixed(2)}</span>
             </div>
             
+            ${bid.additional_notes ? `
             <div class="detail-item">
-                <span class="detail-label">Full Hire Price:</span>
-                <span class="detail-value highlight">LKR ${parseFloat(bid.full_hire_price).toFixed(2)}</span>
-            </div>
-            
-            <div class="detail-item">
-                <span class="detail-label">Phone Number:</span>
-                <span class="detail-value">${bid.phone_number}</span>
-            </div>
-            
-            ${(bid.photo1_path || bid.photo2_path) ? `
-            <div style="margin: 1rem 0;">
-                <strong>Vehicle Photos:</strong>
-                <div class="photo-container">
-                    ${bid.photo1_path ? `
-                    <div class="photo-item">
-                        <img src="${bid.photo1_path}" alt="Vehicle Photo 1" onclick="openPhotoModal('${bid.photo1_path}')">
-                    </div>
-                    ` : ''}
-                    ${bid.photo2_path ? `
-                    <div class="photo-item">
-                        <img src="${bid.photo2_path}" alt="Vehicle Photo 2" onclick="openPhotoModal('${bid.photo2_path}')">
-                    </div>
-                    ` : ''}
-                </div>
+                <span class="detail-label">Additional Notes:</span>
+                <span class="detail-value">${bid.additional_notes}</span>
             </div>
             ` : ''}
             
-            <div style="margin-top: 1rem;">
-                <button onclick="deleteBid(${bid.id})" class="btn btn-danger">
-                    Delete Bid
-                </button>
+            <div class="action-buttons">
+                <button onclick="deleteBid(${bid.id})" class="btn-danger btn-small">Delete Bid</button>
             </div>
         </div>
     `;
