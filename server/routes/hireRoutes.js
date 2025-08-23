@@ -41,25 +41,22 @@ router.post('/', async (req, res) => {
         console.log('Received hire request data:', req.body);
         
         const {
-            user_name,
-            user_phone,
             pickup_location,
             dropoff_location,
             pickup_date,
             hire_type,
-            additional_details
+            vehicle_type,
+            passengers,
+            ac_preference,
+            duration_days,
+            additional_data
         } = req.body;
 
         // Validate required fields
-        if (!user_name || !user_phone || !pickup_location || !dropoff_location || !pickup_date || !hire_type) {
+        if (!pickup_location || !dropoff_location || !pickup_date || !hire_type || 
+            !vehicle_type || !passengers || !ac_preference || !duration_days) {
             console.log('Missing required fields');
             return res.status(400).json({ error: 'All required fields must be provided' });
-        }
-
-        // Validate phone number (10 digits)
-        const phoneRegex = /^\d{10}$/;
-        if (!phoneRegex.test(user_phone)) {
-            return res.status(400).json({ error: 'Phone number must be exactly 10 digits' });
         }
 
         // Validate pickup date
@@ -75,10 +72,12 @@ router.post('/', async (req, res) => {
         
         const result = await pool.query(
             `INSERT INTO hire_requests 
-             (user_name, user_phone, pickup_location, dropoff_location, pickup_date, hire_type, additional_details) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7) 
+             (pickup_location, dropoff_location, pickup_date, hire_type, vehicle_type, 
+              passengers, ac_preference, duration_days, additional_data, is_active) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, TRUE) 
              RETURNING *`,
-            [user_name, user_phone, pickup_location, dropoff_location, pickup_date, hire_type, additional_details || '']
+            [pickup_location, dropoff_location, pickup_date, hire_type, vehicle_type, 
+             passengers, ac_preference, duration_days, additional_data || '']
         );
 
         console.log('Database insert successful:', result.rows[0]);

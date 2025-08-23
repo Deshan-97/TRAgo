@@ -23,17 +23,17 @@ router.post('/', (req, res) => {
             
             const {
                 hire_request_id,
-                company_name,
-                contact_person,
-                contact_phone,
-                contact_email,
-                bid_amount,
-                additional_notes
+                owner_name,
+                vehicle_type,
+                price_per_km_ac,
+                price_per_km_non_ac,
+                full_hire_price,
+                phone_number
             } = req.body;
 
             // Validate required fields
-            if (!hire_request_id || !company_name || !contact_person || 
-                !contact_phone || !contact_email || !bid_amount) {
+            if (!hire_request_id || !owner_name || !vehicle_type || 
+                !price_per_km_ac || !price_per_km_non_ac || !full_hire_price || !phone_number) {
                 console.log('Missing required fields');
                 return res.status(400).json({ error: 'All required fields must be provided' });
             }
@@ -41,13 +41,13 @@ router.post('/', (req, res) => {
             // Check if hire request exists
             console.log('Checking hire request:', hire_request_id);
             const hireCheck = await pool.query(
-                'SELECT id FROM hire_requests WHERE id = $1',
+                'SELECT id FROM hire_requests WHERE id = $1 AND is_active = TRUE',
                 [hire_request_id]
             );
 
             if (hireCheck.rows.length === 0) {
-                console.log('Hire request not found');
-                return res.status(404).json({ error: 'Hire request not found' });
+                console.log('Hire request not found or inactive');
+                return res.status(404).json({ error: 'Hire request not found or inactive' });
             }
 
             // Get uploaded file paths
@@ -59,14 +59,16 @@ router.post('/', (req, res) => {
             console.log('Photo paths:', { photo1_path, photo2_path });
 
             // Validate numeric fields
-            const bidAmountValue = parseFloat(bid_amount);
+            const acPrice = parseFloat(price_per_km_ac);
+            const nonAcPrice = parseFloat(price_per_km_non_ac);
+            const fullPrice = parseFloat(full_hire_price);
 
-            if (isNaN(bidAmountValue)) {
-                return res.status(400).json({ error: 'Bid amount must be a valid number' });
+            if (isNaN(acPrice) || isNaN(nonAcPrice) || isNaN(fullPrice)) {
+                return res.status(400).json({ error: 'Prices must be valid numbers' });
             }
 
-            if (bidAmountValue < 0) {
-                return res.status(400).json({ error: 'Bid amount cannot be negative' });
+            if (acPrice < 0 || nonAcPrice < 0 || fullPrice < 0) {
+                return res.status(400).json({ error: 'Prices cannot be negative' });
             }
 
             console.log('Inserting bid into database...');
@@ -74,12 +76,12 @@ router.post('/', (req, res) => {
             // Insert bid
             const result = await pool.query(
                 `INSERT INTO bid_submissions 
-                 (hire_request_id, company_name, contact_person, contact_phone, 
-                  contact_email, bid_amount, additional_notes) 
-                 VALUES ($1, $2, $3, $4, $5, $6, $7) 
+                 (hire_request_id, owner_name, vehicle_type, price_per_km_ac, 
+                  price_per_km_non_ac, full_hire_price, photo1_path, photo2_path, phone_number) 
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
                  RETURNING *`,
-                [hire_request_id, company_name, contact_person, contact_phone, 
-                 contact_email, bidAmountValue, additional_notes || '']
+                [hire_request_id, owner_name, vehicle_type, acPrice, 
+                 nonAcPrice, fullPrice, photo1_path, photo2_path, phone_number]
             );
 
             console.log('Bid inserted successfully:', result.rows[0]);
@@ -100,10 +102,10 @@ router.post('/', (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT b.*, h.user_name, h.pickup_location, h.dropoff_location, h.hire_type
+            SELECT b.*, h.pickup_location, h.dropoff_location, h.hire_type
             FROM bid_submissions b
             JOIN hire_requests h ON b.hire_request_id = h.id
-            ORDER BY b.created_at DESC
+            ORDER BY b.submitted_at DESC
         `);
         res.json(result.rows);
     } catch (error) {
@@ -117,7 +119,7 @@ router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const result = await pool.query(
-            `SELECT b.*, h.user_name, h.pickup_location, h.dropoff_location, h.hire_type
+            `SELECT b.*, h.pickup_location, h.dropoff_location, h.hire_type
              FROM bid_submissions b
              JOIN hire_requests h ON b.hire_request_id = h.id
              WHERE b.id = $1`,

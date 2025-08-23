@@ -288,40 +288,55 @@ async function loadAllBids() {
 
 // Create bid card HTML
 function createBidCard(bid) {
-    const submittedDate = new Date(bid.created_at).toLocaleDateString();
-    const submittedTime = new Date(bid.created_at).toLocaleTimeString();
-    const hireTypeDisplay = formatHireType(bid.hire_type);
+    const submittedDate = bid.submitted_at ? new Date(bid.submitted_at).toLocaleDateString() : 'N/A';
+    const submittedTime = bid.submitted_at ? new Date(bid.submitted_at).toLocaleTimeString() : 'N/A';
+    const vehicleTypeDisplay = formatVehicleType(bid.vehicle_type);
+    
+    // Calculate display price based on available pricing
+    let displayPrice = 'N/A';
+    if (bid.full_hire_price && bid.full_hire_price > 0) {
+        displayPrice = `LKR ${parseFloat(bid.full_hire_price).toFixed(2)} (Full Hire)`;
+    } else if (bid.price_per_km_ac && bid.price_per_km_non_ac) {
+        displayPrice = `AC: LKR ${parseFloat(bid.price_per_km_ac).toFixed(2)}/km | Non-AC: LKR ${parseFloat(bid.price_per_km_non_ac).toFixed(2)}/km`;
+    } else if (bid.price_per_km_ac) {
+        displayPrice = `LKR ${parseFloat(bid.price_per_km_ac).toFixed(2)}/km (AC)`;
+    } else if (bid.price_per_km_non_ac) {
+        displayPrice = `LKR ${parseFloat(bid.price_per_km_non_ac).toFixed(2)}/km (Non-AC)`;
+    }
     
     return `
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">${bid.company_name} - ${bid.contact_person}</h3>
+                <h3 class="card-title">${bid.owner_name || 'Unknown Owner'} - ${vehicleTypeDisplay}</h3>
                 <p class="card-subtitle">
-                    For: ${bid.pickup_location} → ${bid.dropoff_location} (${hireTypeDisplay})<br>
-                    Client: ${bid.user_name}<br>
+                    For: ${bid.pickup_location || 'N/A'} → ${bid.dropoff_location || 'N/A'}<br>
+                    Vehicle: ${vehicleTypeDisplay}<br>
                     Submitted: ${submittedDate} at ${submittedTime}
                 </p>
             </div>
             
             <div class="detail-item">
                 <span class="detail-label">Contact Phone:</span>
-                <span class="detail-value">${bid.contact_phone}</span>
+                <span class="detail-value">${bid.phone_number || 'N/A'}</span>
             </div>
             
             <div class="detail-item">
-                <span class="detail-label">Contact Email:</span>
-                <span class="detail-value">${bid.contact_email}</span>
+                <span class="detail-label">Vehicle Type:</span>
+                <span class="detail-value">${vehicleTypeDisplay}</span>
             </div>
             
             <div class="detail-item">
-                <span class="detail-label">Bid Amount:</span>
-                <span class="detail-value highlight">LKR ${parseFloat(bid.bid_amount).toFixed(2)}</span>
+                <span class="detail-label">Pricing:</span>
+                <span class="detail-value highlight">${displayPrice}</span>
             </div>
             
-            ${bid.additional_notes ? `
+            ${bid.photo1_path || bid.photo2_path ? `
             <div class="detail-item">
-                <span class="detail-label">Additional Notes:</span>
-                <span class="detail-value">${bid.additional_notes}</span>
+                <span class="detail-label">Vehicle Photo:</span>
+                <span class="detail-value">
+                    ${bid.photo1_path ? `<button onclick="openPhotoModal('${bid.photo1_path}')" class="btn btn-small">View Photo 1</button>` : ''}
+                    ${bid.photo2_path ? `<button onclick="openPhotoModal('${bid.photo2_path}')" class="btn btn-small">View Photo 2</button>` : ''}
+                </span>
             </div>
             ` : ''}
             
