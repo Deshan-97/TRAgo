@@ -35,49 +35,31 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Create new hire request (Admin)
+// Create new hire request
 router.post('/', async (req, res) => {
     try {
         console.log('Received hire request data:', req.body);
         
         const {
+            user_name,
+            user_phone,
             pickup_location,
             dropoff_location,
             pickup_date,
             hire_type,
-            vehicle_type,
-            passengers,
-            ac_preference,
-            duration_days,
-            additional_data
+            additional_details
         } = req.body;
 
         // Validate required fields
-        if (!pickup_location || !dropoff_location || !pickup_date || !hire_type || !vehicle_type || 
-            !passengers || !ac_preference || !duration_days) {
+        if (!user_name || !user_phone || !pickup_location || !dropoff_location || !pickup_date || !hire_type) {
             console.log('Missing required fields');
             return res.status(400).json({ error: 'All required fields must be provided' });
         }
 
-        // Validate enum values
-        const validHireTypes = ['wedding', 'trip', 'airport_transport'];
-        const validVehicleTypes = ['van', 'bus', 'car'];
-        const validAcPreferences = ['AC', 'Non-AC'];
-
-        if (!validHireTypes.includes(hire_type)) {
-            return res.status(400).json({ error: 'Invalid hire type' });
-        }
-
-        if (!validVehicleTypes.includes(vehicle_type)) {
-            return res.status(400).json({ error: 'Invalid vehicle type' });
-        }
-
-        if (!validAcPreferences.includes(ac_preference)) {
-            return res.status(400).json({ error: 'Invalid AC preference' });
-        }
-
-        if (passengers < 1 || passengers > 50) {
-            return res.status(400).json({ error: 'Passengers must be between 1 and 50' });
+        // Validate phone number (10 digits)
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(user_phone)) {
+            return res.status(400).json({ error: 'Phone number must be exactly 10 digits' });
         }
 
         // Validate pickup date
@@ -93,12 +75,10 @@ router.post('/', async (req, res) => {
         
         const result = await pool.query(
             `INSERT INTO hire_requests 
-             (pickup_location, dropoff_location, pickup_date, hire_type, vehicle_type, passengers, 
-              ac_preference, duration_days, additional_data) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+             (user_name, user_phone, pickup_location, dropoff_location, pickup_date, hire_type, additional_details) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7) 
              RETURNING *`,
-            [pickup_location, dropoff_location, pickup_date, hire_type, vehicle_type, 
-             passengers, ac_preference, duration_days, additional_data]
+            [user_name, user_phone, pickup_location, dropoff_location, pickup_date, hire_type, additional_details || '']
         );
 
         console.log('Database insert successful:', result.rows[0]);
