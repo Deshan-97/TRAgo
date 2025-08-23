@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS hire_requests (
     dropoff_location VARCHAR(500) NOT NULL,
     pickup_date DATE NOT NULL,
     hire_type VARCHAR(100) NOT NULL,
+    vehicle_type VARCHAR(100), -- Add this line
     additional_details TEXT,
     image_paths TEXT[], -- Array of image file paths
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
