@@ -105,7 +105,7 @@ router.get('/', async (req, res) => {
             SELECT b.*, h.pickup_location, h.dropoff_location, h.hire_type
             FROM bid_submissions b
             JOIN hire_requests h ON b.hire_request_id = h.id
-            ORDER BY b.submitted_at DESC
+            ORDER BY b.created_at DESC
         `);
         res.json(result.rows);
     } catch (error) {
